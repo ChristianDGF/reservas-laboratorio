@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Reserva } from '../types';
-// import { reservasApi } from '../api/client'; // Descomentar al conectar con AWS
+import { reservasApi } from '../api/cliente';
 
 interface HistorialPasadasProps {
     onVolver: () => void;
@@ -24,16 +24,9 @@ export const HistorialPasadas: React.FC<HistorialPasadasProps> = ({ onVolver }) 
         setLoading(true);
 
         try {
-            // Cuando tengas el API Gateway listo, usarás esta línea:
-            // const data = await reservasApi.obtenerPasadas(fechaInicio, fechaFin);
-
-            // Simulación de datos para pruebas locales:
-            console.log(`Buscando desde ${fechaInicio} hasta ${fechaFin}`);
-            const dataSimulada: Reserva[] = [
-                { id_estudiante: '1231232', nombre: 'Estudiante 3', carrera: 'ISC', laboratorio: 'Comunicaciones', fecha_hora: '2020-07-11T15:00:00Z' }
-            ];
-            setReservas(dataSimulada);
-
+            // Llamada real a tu API en AWS para buscar por fechas
+            const data = await reservasApi.obtenerPasadas(fechaInicio, fechaFin);
+            setReservas(data || []);
         } catch (err: any) {
             setError(err.message || 'Error al buscar el historial');
         } finally {
@@ -47,7 +40,7 @@ export const HistorialPasadas: React.FC<HistorialPasadasProps> = ({ onVolver }) 
                 <h2 style={{ margin: 0 }}>Historial de Reservas</h2>
                 <button
                     onClick={onVolver}
-                    style={{ padding: '8px 16px', cursor: 'pointer', backgroundColor: '#e0e0e0', border: 'none', borderRadius: '4px' }}
+                    className="btn-secondary"
                 >
                     Volver a Reservas Activas
                 </button>
@@ -60,7 +53,6 @@ export const HistorialPasadas: React.FC<HistorialPasadasProps> = ({ onVolver }) 
                         type="datetime-local"
                         value={fechaInicio}
                         onChange={(e) => setFechaInicio(e.target.value)}
-                        style={{ padding: '8px' }}
                     />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -69,39 +61,38 @@ export const HistorialPasadas: React.FC<HistorialPasadasProps> = ({ onVolver }) 
                         type="datetime-local"
                         value={fechaFin}
                         onChange={(e) => setFechaFin(e.target.value)}
-                        style={{ padding: '8px' }}
                     />
                 </div>
-                <button type="submit" disabled={loading} style={{ padding: '8px 16px', cursor: 'pointer', height: '35px' }}>
+                <button type="submit" disabled={loading} className="btn-primary" style={{ height: '42px', marginBottom: '12px' }}>
                     {loading ? 'Buscando...' : 'Buscar'}
                 </button>
             </form>
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ccc' }}>
+            <table>
                 <thead>
-                    <tr style={{ backgroundColor: '#fafafa' }}>
-                        <th style={{ padding: '12px', border: '1px solid #ccc' }}>ID</th>
-                        <th style={{ padding: '12px', border: '1px solid #ccc' }}>Nombre</th>
-                        <th style={{ padding: '12px', border: '1px solid #ccc' }}>Laboratorio</th>
-                        <th style={{ padding: '12px', border: '1px solid #ccc' }}>Fecha y Hora</th>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Laboratorio</th>
+                        <th>Fecha y Hora</th>
                     </tr>
                 </thead>
                 <tbody>
                     {reservas.length === 0 ? (
                         <tr>
                             <td colSpan={4} style={{ textAlign: 'center', padding: '20px' }}>
-                                Realiza una búsqueda para ver el historial.
+                                Realiza una búsqueda para ver el historial o no se encontraron resultados.
                             </td>
                         </tr>
                     ) : (
                         reservas.map((reserva) => (
                             <tr key={reserva.id_reserva || `${reserva.id_estudiante}-${reserva.fecha_hora}`}>
-                                <td style={{ padding: '12px', border: '1px solid #ccc', textAlign: 'center' }}>{reserva.id_estudiante}</td>
-                                <td style={{ padding: '12px', border: '1px solid #ccc', textAlign: 'center' }}>{reserva.nombre}</td>
-                                <td style={{ padding: '12px', border: '1px solid #ccc', textAlign: 'center' }}>{reserva.laboratorio}</td>
-                                <td style={{ padding: '12px', border: '1px solid #ccc', textAlign: 'center' }}>
+                                <td style={{ textAlign: 'center' }}>{reserva.id_estudiante}</td>
+                                <td style={{ textAlign: 'center' }}>{reserva.nombre}</td>
+                                <td style={{ textAlign: 'center' }}>{reserva.laboratorio}</td>
+                                <td style={{ textAlign: 'center' }}>
                                     {new Date(reserva.fecha_hora).toLocaleString('es-DO', { dateStyle: 'short', timeStyle: 'short' })}
                                 </td>
                             </tr>

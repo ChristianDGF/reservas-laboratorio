@@ -1,10 +1,10 @@
 import type { Reserva } from '../types';
 
-// TODO: Reemplazar esta URL con la que te genere AWS API Gateway en el laboratorio
-const API_BASE_URL = 'https://tucodigo.execute-api.us-east-1.amazonaws.com/prod';
+// URL de invocación de tu API Gateway en AWS
+const API_BASE_URL = 'https://eat2ummw4b.execute-api.us-east-1.amazonaws.com';
 
 export const reservasApi = {
-    // Obtener todas las reservas cuya fecha no ha expirado [cite: 26]
+    // Obtener todas las reservas cuya fecha no ha expirado
     obtenerActivas: async (): Promise<Reserva[]> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas/activas`);
@@ -16,7 +16,7 @@ export const reservasApi = {
         }
     },
 
-    // Mostrar registros pasados por rango de fecha [cite: 27]
+    // Mostrar registros pasados por rango de fecha
     obtenerPasadas: async (fechaInicio: string, fechaFin: string): Promise<Reserva[]> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas/pasadas?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
@@ -28,7 +28,7 @@ export const reservasApi = {
         }
     },
 
-    // Registrar una nueva reserva pasando por las reglas de negocio [cite: 20]
+    // Registrar una nueva reserva pasando por las reglas de negocio
     crearReserva: async (nuevaReserva: Reserva): Promise<Reserva> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas`, {
@@ -42,7 +42,6 @@ export const reservasApi = {
             const data = await response.json();
 
             if (!response.ok) {
-                // Lanzamos el mensaje de error que configuramos en la Lambda (ej. límite de 7 personas) [cite: 24]
                 throw new Error(data.mensaje || 'Error al crear la reserva');
             }
 

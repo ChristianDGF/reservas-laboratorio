@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { TablaReservas } from './components/TablaReservas';
 import { ModalRegistro } from './components/ModalRegistro';
 import { HistorialPasadas } from './components/HistorialPasadas';
+import { reservasApi } from './api/cliente';
 import type { Reserva } from './types';
 
 // Definimos los tipos de vistas posibles
@@ -17,13 +18,9 @@ function App() {
   const cargarReservas = async () => {
     setCargandoDatos(true);
     try {
-      // const data = await reservasApi.obtenerActivas();
-      // setReservas(data);
-
-      setReservas([
-        { id_estudiante: '10111111', nombre: 'Estudiante 1', carrera: 'ISC', laboratorio: 'REDES', fecha_hora: '2026-03-24T15:00:00Z' },
-        { id_estudiante: '11123123', nombre: 'Estudiante 2', carrera: 'ISC', laboratorio: 'Computación', fecha_hora: '2026-03-24T16:00:00Z' },
-      ]);
+      // Llamada real a tu API en AWS para traer datos de DynamoDB
+      const data = await reservasApi.obtenerActivas();
+      setReservas(data || []);
     } catch (error) {
       alert('Error al cargar las reservas activas');
     } finally {
@@ -38,8 +35,10 @@ function App() {
   }, [vistaActual]);
 
   const handleCrearReserva = async (nuevaReserva: Reserva) => {
-    // await reservasApi.crearReserva(nuevaReserva);
-    setReservas([...reservas, nuevaReserva]);
+    // Guardamos en DynamoDB a través de API Gateway
+    await reservasApi.crearReserva(nuevaReserva);
+    // Recargamos la lista desde la base de datos para ver el nuevo registro
+    await cargarReservas();
   };
 
   return (
