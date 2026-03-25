@@ -8,7 +8,7 @@ const TABLA = "Reservas";
 
 export const handler = async (event) => {
     try {
-        // Parsear el body que envía el frontend en React
+
         const body = JSON.parse(event.body);
         const { id_estudiante, nombre, carrera, laboratorio, fecha_hora } = body;
 
@@ -16,7 +16,6 @@ export const handler = async (event) => {
         const hora = fechaReserva.getHours();
         const minutos = fechaReserva.getMinutes();
 
-        // REGLA 1: Múltiplos de hora exacta y horario de 8 AM a 9 PM
         if (minutos !== 0 || hora < 8 || hora > 21) {
             return {
                 statusCode: 400,
@@ -25,8 +24,6 @@ export const handler = async (event) => {
             };
         }
 
-        // REGLA 2: Máximo 7 personas por hora de forma simultánea
-        // Nota: Usamos Scan por simplicidad para la práctica, pero en producción se usaría un índice (Query).
         const result = await dynamo.send(new ScanCommand({
             TableName: TABLA,
             FilterExpression: "laboratorio = :lab AND fecha_hora = :fecha",
@@ -44,7 +41,6 @@ export const handler = async (event) => {
             };
         }
 
-        // Si pasa las validaciones, guardamos en DynamoDB
         const nuevaReserva = {
             id_reserva: randomUUID(),
             id_estudiante,

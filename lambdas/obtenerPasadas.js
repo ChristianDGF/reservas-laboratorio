@@ -6,7 +6,6 @@ const dynamo = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
     try {
-        // Extraer los parámetros de la URL (ej: ?fecha_inicio=2024-01-01T00:00:00Z&fecha_fin=2024-01-31T23:59:59Z)
         const fecha_inicio = event.queryStringParameters?.fecha_inicio;
         const fecha_fin = event.queryStringParameters?.fecha_fin;
 

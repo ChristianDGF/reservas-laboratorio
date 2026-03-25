@@ -8,7 +8,6 @@ export const handler = async (event) => {
     try {
         const ahora = new Date().toISOString();
 
-        // Filtramos donde la fecha_hora de la reserva sea mayor a la fecha actual
         const result = await dynamo.send(new ScanCommand({
             TableName: "Reservas",
             FilterExpression: "fecha_hora > :ahora",

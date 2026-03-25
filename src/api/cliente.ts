@@ -1,10 +1,8 @@
 import type { Reserva } from '../types';
 
-// URL de invocación de tu API Gateway en AWS
-const API_BASE_URL = 'https://eat2ummw4b.execute-api.us-east-1.amazonaws.com';
+const API_BASE_URL = 'https://gr75kuhgqg.execute-api.us-east-1.amazonaws.com/';
 
 export const reservasApi = {
-    // Obtener todas las reservas cuya fecha no ha expirado
     obtenerActivas: async (): Promise<Reserva[]> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas/activas`);
@@ -16,7 +14,6 @@ export const reservasApi = {
         }
     },
 
-    // Mostrar registros pasados por rango de fecha
     obtenerPasadas: async (fechaInicio: string, fechaFin: string): Promise<Reserva[]> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas/pasadas?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
@@ -28,7 +25,6 @@ export const reservasApi = {
         }
     },
 
-    // Registrar una nueva reserva pasando por las reglas de negocio
     crearReserva: async (nuevaReserva: Reserva): Promise<Reserva> => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservas`, {
